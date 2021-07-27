@@ -1,0 +1,25 @@
+{
+  "name": "Git_versioning",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaceenet/Git_versioning.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaceenet/Git_versioning/issues"
+  },
+  "homepage": "https://github.com/jaceenet/Git_versioning#readme",
+  "dependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^5.0.0"
+  },
+  "devDependencies": {},
+  "description": ""
+}
