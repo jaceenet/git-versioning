@@ -6,6 +6,10 @@ async function run() {
   await version().then(v => {    
     core.setOutput("tagVersion", v.tagVersion);
     core.setOutput("nextVersion", v.nextVersion);
+
+    core.info("tagVersion: " + v.tagVersion);
+    core.info("nextVersion: " + v.nextVersion);
+    core.info("releaseType: " + v.releaseType);
   })
 }
 
