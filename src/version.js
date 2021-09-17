@@ -1,6 +1,6 @@
 const gitSemverTags = require("git-semver-tags");
-var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
-var conventionalChangelogPresetLoader = require('conventional-changelog-angular');
+//var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
+require('conventional-changelog-angular');
 const conventionalRecommendedBump = require(`conventional-recommended-bump`);
 const semver = require("semver");
 const tagPrefix = "v";

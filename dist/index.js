@@ -37728,8 +37728,8 @@ function wrappy (fn, cb) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const gitSemverTags = __nccwpck_require__(2408);
-var conventionalChangelogPresetLoader = __nccwpck_require__(8079);
-var conventionalChangelogPresetLoader = __nccwpck_require__(8143);
+//var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
+__nccwpck_require__(8143);
 const conventionalRecommendedBump = __nccwpck_require__(7011);
 const semver = __nccwpck_require__(5911);
 const tagPrefix = "v";
