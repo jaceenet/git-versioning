@@ -1,6 +1,6 @@
 const gitSemverTags = require("git-semver-tags");
-//var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
-require('conventional-changelog-angular');
+var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
+const config = require('conventional-changelog-conventionalcommits')
 const conventionalRecommendedBump = require(`conventional-recommended-bump`);
 const semver = require("semver");
 const tagPrefix = "v";
@@ -53,14 +53,23 @@ function nextVersion(releaseType, version) {
   return major + "." + minor + "." + patch;
 }
 
+// var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
+// configuration = conventionalChangelogPresetLoader(`angular`);
+
 const bumpVersion = () => {
   return new Promise((resolve, reject) => {
 
+    // var c = {
+    //   preset: 'angular',
+    //   tagPrefix,
+    // };
+
+    
+
     conventionalRecommendedBump(
-      {
-        preset: 'angular',
-        tagPrefix,
-      },
+      config({
+        tagPrefix
+      }),
       (error, recommendation) => {
         //console.log("bump: ", recommendation, error);
         if (error !== null) {
