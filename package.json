@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "ncc build src\\index.js --license licenses.txt",
+    "build": "ncc build src\\index.js -a --license licenses.txt",
     "test": "node src\\index.js --license licenses.txt"
   },
   "repository": {

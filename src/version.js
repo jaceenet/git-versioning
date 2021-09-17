@@ -76,9 +76,9 @@ const version = async () => {
   const currentVersion = await getGitVersion("0.0.1");
   const a = await bumpVersion();
   const nversion = nextVersion(a.releaseType, currentVersion);
-  console.log(currentVersion);
-  console.log(nversion);
-  console.log(a.releaseType);
+  // console.log(currentVersion);
+  // console.log(nversion);
+  // console.log(a.releaseType);
 
   return { tagVersion: currentVersion, nextVersion: nversion, currentVersion, releaseType: a.releaseType };
 }
