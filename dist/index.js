@@ -3827,6 +3827,18 @@ exports.request = request;
 
 /***/ }),
 
+/***/ 8912:
+/***/ ((module) => {
+
+"use strict";
+
+module.exports = function(val) {
+  return Array.isArray(val) ? val : [val];
+};
+
+
+/***/ }),
+
 /***/ 3682:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -4083,6 +4095,56 @@ module.exports = bufferFrom
 
 /***/ }),
 
+/***/ 4623:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var arrayify = __nccwpck_require__(8912);
+var dotPropGet = __nccwpck_require__(2042).get;
+
+function compareFunc(prop) {
+  return function(a, b) {
+    var ret = 0;
+
+    arrayify(prop).some(function(el) {
+      var x;
+      var y;
+
+      if (typeof el === 'function') {
+        x = el(a);
+        y = el(b);
+      } else if (typeof el === 'string') {
+        x = dotPropGet(a, el);
+        y = dotPropGet(b, el);
+      } else {
+        x = a;
+        y = b;
+      }
+
+      if (x === y) {
+        ret = 0;
+        return;
+      }
+
+      if (typeof x === 'string' && typeof y === 'string') {
+        ret = x.localeCompare(y);
+        return ret !== 0;
+      }
+
+      ret = x < y ? -1 : 1;
+      return true;
+    });
+
+    return ret;
+  };
+}
+
+module.exports = compareFunc;
+
+
+/***/ }),
+
 /***/ 5107:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -4229,6 +4291,221 @@ function u8Concat (parts) {
     }
   }
   return u8
+}
+
+
+/***/ }),
+
+/***/ 5290:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const Q = __nccwpck_require__(6172)
+const parserOpts = __nccwpck_require__(4593)
+const writerOpts = __nccwpck_require__(8631)
+
+module.exports = Q.all([parserOpts, writerOpts])
+  .spread((parserOpts, writerOpts) => {
+    return { parserOpts, writerOpts }
+  })
+
+
+/***/ }),
+
+/***/ 3625:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const parserOpts = __nccwpck_require__(4593)
+
+module.exports = {
+  parserOpts,
+
+  whatBump: (commits) => {
+    let level = 2
+    let breakings = 0
+    let features = 0
+
+    commits.forEach(commit => {
+      if (commit.notes.length > 0) {
+        breakings += commit.notes.length
+        level = 0
+      } else if (commit.type === 'feat') {
+        features += 1
+        if (level === 2) {
+          level = 1
+        }
+      }
+    })
+
+    return {
+      level: level,
+      reason: breakings === 1
+        ? `There is ${breakings} BREAKING CHANGE and ${features} features`
+        : `There are ${breakings} BREAKING CHANGES and ${features} features`
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ 8143:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const Q = __nccwpck_require__(6172)
+const conventionalChangelog = __nccwpck_require__(5290)
+const parserOpts = __nccwpck_require__(4593)
+const recommendedBumpOpts = __nccwpck_require__(3625)
+const writerOpts = __nccwpck_require__(8631)
+
+module.exports = Q.all([conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts])
+  .spread((conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts) => {
+    return { conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts }
+  })
+
+
+/***/ }),
+
+/***/ 4593:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = {
+  headerPattern: /^(\w*)(?:\((.*)\))?: (.*)$/,
+  headerCorrespondence: [
+    'type',
+    'scope',
+    'subject'
+  ],
+  noteKeywords: ['BREAKING CHANGE'],
+  revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
+  revertCorrespondence: ['header', 'hash']
+}
+
+
+/***/ }),
+
+/***/ 8631:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const compareFunc = __nccwpck_require__(4623)
+const Q = __nccwpck_require__(6172)
+const readFile = Q.denodeify(__nccwpck_require__(5747).readFile)
+const resolve = __nccwpck_require__(5622).resolve
+
+module.exports = Q.all([
+  readFile(__nccwpck_require__.ab + "template.hbs", 'utf-8'),
+  readFile(__nccwpck_require__.ab + "header.hbs", 'utf-8'),
+  readFile(__nccwpck_require__.ab + "commit.hbs", 'utf-8'),
+  readFile(__nccwpck_require__.ab + "footer.hbs", 'utf-8')
+])
+  .spread((template, header, commit, footer) => {
+    const writerOpts = getWriterOpts()
+
+    writerOpts.mainTemplate = template
+    writerOpts.headerPartial = header
+    writerOpts.commitPartial = commit
+    writerOpts.footerPartial = footer
+
+    return writerOpts
+  })
+
+function getWriterOpts () {
+  return {
+    transform: (commit, context) => {
+      let discard = true
+      const issues = []
+
+      commit.notes.forEach(note => {
+        note.title = 'BREAKING CHANGES'
+        discard = false
+      })
+
+      if (commit.type === 'feat') {
+        commit.type = 'Features'
+      } else if (commit.type === 'fix') {
+        commit.type = 'Bug Fixes'
+      } else if (commit.type === 'perf') {
+        commit.type = 'Performance Improvements'
+      } else if (commit.type === 'revert' || commit.revert) {
+        commit.type = 'Reverts'
+      } else if (discard) {
+        return
+      } else if (commit.type === 'docs') {
+        commit.type = 'Documentation'
+      } else if (commit.type === 'style') {
+        commit.type = 'Styles'
+      } else if (commit.type === 'refactor') {
+        commit.type = 'Code Refactoring'
+      } else if (commit.type === 'test') {
+        commit.type = 'Tests'
+      } else if (commit.type === 'build') {
+        commit.type = 'Build System'
+      } else if (commit.type === 'ci') {
+        commit.type = 'Continuous Integration'
+      }
+
+      if (commit.scope === '*') {
+        commit.scope = ''
+      }
+
+      if (typeof commit.hash === 'string') {
+        commit.shortHash = commit.hash.substring(0, 7)
+      }
+
+      if (typeof commit.subject === 'string') {
+        let url = context.repository
+          ? `${context.host}/${context.owner}/${context.repository}`
+          : context.repoUrl
+        if (url) {
+          url = `${url}/issues/`
+          // Issue URLs.
+          commit.subject = commit.subject.replace(/#([0-9]+)/g, (_, issue) => {
+            issues.push(issue)
+            return `[#${issue}](${url}${issue})`
+          })
+        }
+        if (context.host) {
+          // User URLs.
+          commit.subject = commit.subject.replace(/\B@([a-z0-9](?:-?[a-z0-9/]){0,38})/g, (_, username) => {
+            if (username.includes('/')) {
+              return `@${username}`
+            }
+
+            return `[@${username}](${context.host}/${username})`
+          })
+        }
+      }
+
+      // remove references that already appear in the subject
+      commit.references = commit.references.filter(reference => {
+        if (issues.indexOf(reference.issue) === -1) {
+          return true
+        }
+
+        return false
+      })
+
+      return commit
+    },
+    groupBy: 'type',
+    commitGroupsSort: 'title',
+    commitsSort: ['scope', 'subject'],
+    noteGroupsSort: 'title',
+    notesSort: compareFunc
+  }
 }
 
 
@@ -5155,6 +5432,156 @@ exports.Deprecation = Deprecation;
 
 /***/ }),
 
+/***/ 2042:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const isObj = __nccwpck_require__(1389);
+
+const disallowedKeys = [
+	'__proto__',
+	'prototype',
+	'constructor'
+];
+
+const isValidPath = pathSegments => !pathSegments.some(segment => disallowedKeys.includes(segment));
+
+function getPathSegments(path) {
+	const pathArray = path.split('.');
+	const parts = [];
+
+	for (let i = 0; i < pathArray.length; i++) {
+		let p = pathArray[i];
+
+		while (p[p.length - 1] === '\\' && pathArray[i + 1] !== undefined) {
+			p = p.slice(0, -1) + '.';
+			p += pathArray[++i];
+		}
+
+		parts.push(p);
+	}
+
+	if (!isValidPath(parts)) {
+		return [];
+	}
+
+	return parts;
+}
+
+module.exports = {
+	get(object, path, value) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return value === undefined ? object : value;
+		}
+
+		const pathArray = getPathSegments(path);
+		if (pathArray.length === 0) {
+			return;
+		}
+
+		for (let i = 0; i < pathArray.length; i++) {
+			if (!Object.prototype.propertyIsEnumerable.call(object, pathArray[i])) {
+				return value;
+			}
+
+			object = object[pathArray[i]];
+
+			if (object === undefined || object === null) {
+				// `object` is either `undefined` or `null` so we want to stop the loop, and
+				// if this is not the last bit of the path, and
+				// if it did't return `undefined`
+				// it would return `null` if `object` is `null`
+				// but we want `get({foo: null}, 'foo.bar')` to equal `undefined`, or the supplied value, not `null`
+				if (i !== pathArray.length - 1) {
+					return value;
+				}
+
+				break;
+			}
+		}
+
+		return object;
+	},
+
+	set(object, path, value) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return object;
+		}
+
+		const root = object;
+		const pathArray = getPathSegments(path);
+
+		for (let i = 0; i < pathArray.length; i++) {
+			const p = pathArray[i];
+
+			if (!isObj(object[p])) {
+				object[p] = {};
+			}
+
+			if (i === pathArray.length - 1) {
+				object[p] = value;
+			}
+
+			object = object[p];
+		}
+
+		return root;
+	},
+
+	delete(object, path) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return false;
+		}
+
+		const pathArray = getPathSegments(path);
+
+		for (let i = 0; i < pathArray.length; i++) {
+			const p = pathArray[i];
+
+			if (i === pathArray.length - 1) {
+				delete object[p];
+				return true;
+			}
+
+			object = object[p];
+
+			if (!isObj(object)) {
+				return false;
+			}
+		}
+	},
+
+	has(object, path) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return false;
+		}
+
+		const pathArray = getPathSegments(path);
+		if (pathArray.length === 0) {
+			return false;
+		}
+
+		// eslint-disable-next-line unicorn/no-for-loop
+		for (let i = 0; i < pathArray.length; i++) {
+			if (isObj(object)) {
+				if (!(pathArray[i] in object)) {
+					return false;
+				}
+
+				object = object[pathArray[i]];
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+};
+
+
+/***/ }),
+
 /***/ 9834:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -5375,6 +5802,20 @@ if (typeof Object.create === 'function') {
     }
   }
 }
+
+
+/***/ }),
+
+/***/ 1389:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = value => {
+	const type = typeof value;
+	return value !== null && (type === 'object' || type === 'function');
+};
 
 
 /***/ }),
@@ -37288,6 +37729,7 @@ function wrappy (fn, cb) {
 
 const gitSemverTags = __nccwpck_require__(2408);
 var conventionalChangelogPresetLoader = __nccwpck_require__(8079);
+var conventionalChangelogPresetLoader = __nccwpck_require__(8143);
 const conventionalRecommendedBump = __nccwpck_require__(7011);
 const semver = __nccwpck_require__(5911);
 const tagPrefix = "v";
