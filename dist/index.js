@@ -38231,7 +38231,7 @@ const github = __nccwpck_require__(5438);
 const version = __nccwpck_require__(9554);
 
 function run() { 
-  const tagPrefix = core.getInput("tag-prefix");
+  const tagPrefix = "v"; //core.getInput("tag-prefix");
   const tagCommit = false; //core.getInput("tag-commit");
 
   core.info("input: tagPrefix: " + tagPrefix);

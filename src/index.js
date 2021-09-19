@@ -3,7 +3,7 @@ const github = require("@actions/github");
 const version = require("./version");
 
 function run() { 
-  const tagPrefix = core.getInput("tag-prefix");
+  const tagPrefix = "v"; //core.getInput("tag-prefix");
   const tagCommit = false; //core.getInput("tag-commit");
 
   core.info("input: tagPrefix: " + tagPrefix);
