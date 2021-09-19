@@ -38236,7 +38236,7 @@ async function run() {
     const tagPrefix = core.getInput("tag-prefix");
     const tagCommit = false; //core.getInput("tag-commit");
 
-    core.debug("tagPrefix: " + tagPrefix);
+    core.info("tagPrefix: " + tagPrefix);
     core.info("tagCommit: " + tagCommit);
     
     var v = await version();
@@ -38251,7 +38251,7 @@ async function run() {
      // Create the new tag
      if (tagCommit){
        core.info("tagging commit with: " + v.nextVersion);
-       await git.createTag(`${tagPrefix}${v.nextVersion}`)
+       //await git.createTag(`${tagPrefix}${v.nextVersion}`)
      }
   }
   catch (error) {
