@@ -38215,35 +38215,29 @@ const github = __nccwpck_require__(5438);
 const version = __nccwpck_require__(9554);
 
 async function run() {
-  await version().then(v => {    
+
+  try {
+    const tagPrefix = core.getInput("tag-prefix");
+    const tagCommit = core.getInput("tag-commit");
+
+    var v = await version();
+
     core.setOutput("tagVersion", v.tagVersion);
     core.setOutput("nextVersion", v.nextVersion);
 
     core.info("tagVersion: " + v.tagVersion);
     core.info("nextVersion: " + v.nextVersion);
     core.info("releaseType: " + v.releaseType);
-  })
+
+     // Create the new tag
+     if (tagCommit){
+       await git.createTag(`${tagPrefix}${v.nextVersion}`)
+     }
+  }
+  catch (error) {
+    core.setFailed(error.message);
+  }
 }
-
-// try {
-
-//   version().then(v => {    
-//     core.setOutput("tagVersion", v.tagVersion);
-//     core.setOutput("nextVersion", v.nextVersion);
-//   })
-
-//   // // `who-to-greet` input defined in action metadata file
-//   // const nameToGreet = core.getInput("who-to-greet");
-//   // console.log(`Hello ${nameToGreet}!`);
-//   // const time = new Date().toTimeString();
-//   // core.setOutput("time", time);
-  
-//   // // Get the JSON webhook payload for the event that triggered the workflow
-//   // const payload = JSON.stringify(github.context.payload, undefined, 2);
-//   // console.log(`The event payload: ${payload}`);
-// } catch (error) {
-//   core.setFailed(error.message);
-// }
 
 run();
 

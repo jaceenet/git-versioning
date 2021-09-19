@@ -1,13 +1,18 @@
 name: 'Git versioning'
 description: 'Sample git action'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  tag-prefix:  # id of input
+    description: 'tag prefix, default v'
+    required: false
+    default: 'v'
+  tag-commit:
+    description: 'tag the upcomming version'
     required: true
-    default: 'World'
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  tagVersion: # id of output
+    description: 'the last git tag version'
+  nextVersion:
+    description: 'the upcomming version'
 runs:
   using: 'node12'
   main: 'dist/index.js'
