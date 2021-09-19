@@ -7,7 +7,8 @@ inputs:
     default: 'v'
   tag-commit:
     description: 'tag the upcomming version'
-    required: true
+    required: false
+    default: false
 outputs:
   tagVersion: # id of output
     description: 'the last git tag version'
