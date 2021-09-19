@@ -38234,7 +38234,7 @@ async function run() {
 
   try {
     const tagPrefix = core.getInput("tag-prefix");
-    const tagCommit = core.getInput("tag-commit");
+    const tagCommit = false; //core.getInput("tag-commit");
 
     core.debug("tagPrefix: " + tagPrefix);
     core.info("tagCommit: " + tagCommit);
