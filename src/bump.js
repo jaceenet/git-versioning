@@ -1,5 +1,6 @@
 var conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
-const config = require('conventional-changelog-conventionalcommits')
+var angular = require('conventional-changelog-angular');
+//const config = require('conventional-changelog-conventionalcommits')
 const conventionalRecommendedBump = require(`conventional-recommended-bump`);
 
 const bumpVersion = (tagPrefix) => {
@@ -9,7 +10,7 @@ const bumpVersion = (tagPrefix) => {
 
         const defaultConfig = {
             tagPrefix,
-            config: autoConfig
+            config: angular
         };
 
         conventionalRecommendedBump(
