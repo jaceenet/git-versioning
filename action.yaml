@@ -5,10 +5,10 @@ inputs:
     description: 'tag prefix, default v'
     required: false
     default: 'v'
-  tag-commit:
-    description: 'tag the upcomming version'
-    required: false
-    default: false
+  # tag-commit:
+  #   description: 'tag the upcomming version'
+  #   required: false
+  #   default: false
 outputs:
   tagVersion: # id of output
     description: 'the last git tag version'
