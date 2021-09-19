@@ -11,7 +11,7 @@ async function run() {
     core.info("tagPrefix: " + tagPrefix);
     core.info("tagCommit: " + tagCommit);
     
-    var v = await version();
+    var v = await version(tagPrefix);
 
     core.setOutput("tagVersion", v.tagVersion);
     core.setOutput("nextVersion", v.nextVersion);
