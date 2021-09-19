@@ -37739,7 +37739,7 @@ const bumpVersion = (tagPrefix) => {
 
         const defaultConfig = {
             tagPrefix,
-            config: angular
+            preset: 'angular'
         };
 
         conventionalRecommendedBump(
