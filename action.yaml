@@ -1,5 +1,5 @@
 name: 'Git versioning'
-description: 'Sample git action'
+description: 'Versioning from git tags with conventional commit bump'
 inputs:
   tag-prefix:  # id of input
     description: 'tag prefix, default v'
@@ -10,10 +10,14 @@ inputs:
   #   required: false
   #   default: false
 outputs:
-  tagVersion: # id of output
-    description: 'the last git tag version'
+  currentVersion: # id of output
+    description: 'the version found in git'
+  currentTag:
+    description: 'the tag found in git'
   nextVersion:
     description: 'the upcomming version'
+  nextTag:
+    description: 'upcomming tag name'
 runs:
   using: 'node12'
   main: 'dist/index.js'

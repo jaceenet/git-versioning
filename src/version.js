@@ -7,7 +7,7 @@ const version = async (tagPrefix) => {
   const currentVersion = await getTag(tagPrefix, "0.0.1");
   const a = await bumpVersion(tagPrefix);
   const nversion = nextVersion(a.releaseType, currentVersion);
-    return { tagVersion: currentVersion, nextVersion: nversion, currentVersion, releaseType: a.releaseType };
+    return { currentVersion: currentVersion, nextVersion: nversion, releaseType: a.releaseType, nextTag: `${tagPrefix}${nversion}`, currentTag: `${tagPrefix}${currentVersion}`  };
 }
 
 module.exports = version;
