@@ -43,4 +43,6 @@ async function tryRun(){
   }  
 }
 
-tryRun();
+//tryRun();
+
+run();

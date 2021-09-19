@@ -38271,7 +38271,9 @@ async function tryRun(){
   }  
 }
 
-tryRun();
+//tryRun();
+
+run();
 })();
 
 module.exports = __webpack_exports__;
