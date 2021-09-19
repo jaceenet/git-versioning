@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "build": "ncc build src\\index.js -a --license licenses.txt",
-    "test": "node src\\index.js --license licenses.txt"
+    "test": "node src\\test.js",
+    "prerun": "node src\\version.js"
   },
   "repository": {
     "type": "git",
