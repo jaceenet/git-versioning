@@ -38258,14 +38258,18 @@ async function run() {
 
 }
 
-try 
-{
-  run();
+async function tryRun(){
+  try 
+  {
+    await run();
+  }
+  catch (error) 
+  {
+      core.setFailed(error.message);
+  }  
 }
-catch (error) 
-{
-    core.setFailed(error.message);
-}
+
+tryRun();
 })();
 
 module.exports = __webpack_exports__;
